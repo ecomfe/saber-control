@@ -16,10 +16,14 @@ define(function ( require ) {
 
     /**
      * 控件基类
-     * 
      * 禁止实例化，只能继承
+     * 
      * @constructor
      * @exports Control
+     * @requires ui
+     * @requires lang
+     * @requires dom
+     * @requires emitter
      * @fires module:Control#beforeinit
      * @fires module:Control#afterinit
      * @fires module:Control#beforerender
@@ -63,9 +67,9 @@ define(function ( require ) {
 
         /**
          * 初始化控件选项
-         *
-         * @param {Object} options 构造函数传入的选项
+         * 
          * @protected
+         * @param {Object} options 构造函数传入的选项
          */
         initOptions: function ( options ) {
             options = options || {};
@@ -94,10 +98,10 @@ define(function ( require ) {
         /**
          * 控件初始化
          * 
+         * @protected
          * @param {Object} options 配置参数
          * @fires module:Control#beforeinit
          * @fires module:Control#afterinit
-         * @protected
          */
         initialize: function ( options ) {
             var self = this;
@@ -133,9 +137,9 @@ define(function ( require ) {
         /**
          * 创建控件主元素
          * 
+         * @protected
          * @param {Object} options 构造函数传入的配置参数
          * @return {HTMLElement}
-         * @protected
          */
         createMain: function( options ) {
             return document.createElement('div');
@@ -184,10 +188,10 @@ define(function ( require ) {
 
         /**
          * 重新渲染视图
-         * 
          * 首次渲染时, 不传入变更属性集合参数
-         * @param {Object=} changes 变更过的属性的集合
+         * 
          * @protected
+         * @param {Object=} changes 变更过的属性的集合
          */
         repaint: function( changes ) {
             // throw new Error( 'not implement repaint' );
@@ -243,8 +247,8 @@ define(function ( require ) {
         /**
          * 将控件添加到页面的某个元素之前
          * 
-         * @param {HTMLElement} reference 控件要添加到之前的目标元素
          * @public
+         * @param {HTMLElement} reference 控件要添加到之前的目标元素
          */
         insertBefore: function( reference ) {
             reference.parentNode.insertBefore( this.main, reference );
@@ -288,8 +292,8 @@ define(function ( require ) {
         /**
          * 判断控件是否不可用
          * 
-         * @return {boolean}
          * @public
+         * @return {boolean}
          */
         isDisabled: function () {
             return this.hasState( 'disabled' );
@@ -298,8 +302,8 @@ define(function ( require ) {
         /**
          * 设置控件禁用状态
          * 
-         * @param {boolean} disabled 是否禁用
          * @public
+         * @param {boolean} disabled 是否禁用
          */
         setDisabled: function ( disabled ) {
             this[ disabled ? 'disable' : 'enable' ]();
@@ -351,8 +355,8 @@ define(function ( require ) {
         /**
          * 判断控件是否不可见
          * 
-         * @return {boolean}
          * @public
+         * @return {boolean}
          */
         isHidden: function() {
             return this.hasState( 'hidden' );
@@ -361,8 +365,8 @@ define(function ( require ) {
         /**
          * 设置控件不可见状态
          * 
-         * @param {boolean} disabled 是否不可见
          * @public
+         * @param {boolean} disabled 是否不可见
          */
         setHidden: function( hidden ) {
             this[ hidden ? 'hide' : 'show' ]();
@@ -373,11 +377,11 @@ define(function ( require ) {
 
         /**
          * 获取控件属性
-         * 
          * 控件属性分成 核心属性、关键信息属性、数据信息属性
+         * 
+         * @public
          * @param {string} name 属性名
          * @return {*} 返回目标属性的值
-         * @public
          */
         get: function ( name ) {
             var method = this[ 'get' + toPascalize( name ) ];
@@ -392,9 +396,9 @@ define(function ( require ) {
         /**
          * 设置控件属性
          * 
+         * @public
          * @param {string} name 属性名
          * @param {*} value 属性值
-         * @public
          */
         set: function ( name, value ) {
             var method = this[ 'set' + toPascalize( name ) ];
@@ -411,9 +415,9 @@ define(function ( require ) {
         /**
          * 批量设置控件的属性值
          * 
+         * @public
          * @param {Object} properties 属性值集合
          * @fires module:Control#propertychange
-         * @public
          */
         setProperties: function ( properties ) {
             // 确保只有在渲染以前（`initOptions`调用时）才允许设置id
@@ -426,11 +430,11 @@ define(function ( require ) {
 
             // 确保几个状态选项值为`boolean`类型
             // `diabled`, `hidden`
-            [ 'disabled', 'hidden' ].forEach(function ( booleanKey ) {
+            [ 'disabled', 'hidden' ].forEach( function ( booleanKey ) {
                 if ( properties.hasOwnProperty( booleanKey ) ) {
                     properties[ booleanKey ] = !!properties[ booleanKey ];
                 }
-            });
+            } );
 
             var changes = {}, hasChanged, oldValue, newValue;
             for ( var key in properties ) {
@@ -669,5 +673,4 @@ define(function ( require ) {
 
 
     return Control;
-});
-
+} );
