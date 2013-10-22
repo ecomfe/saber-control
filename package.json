@@ -13,6 +13,7 @@
   "repository": "git://github.com/ecomfe/saber-control.git",
   "bugs": "https://github.com/ecomfe/saber-control/issues",
   "dependencies": {
+    "saber-ui": "~0.1.0",
     "saber-lang": "~0.1.0",
     "saber-emitter": "~0.3.0",
     "saber-dom": "~0.0.1"

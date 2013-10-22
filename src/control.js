@@ -7,30 +7,12 @@
  */
 
 define(function ( require ) {
+
+    var ui = require( 'saber-ui' );
     var Lang = require( 'saber-lang' );
     var DOM = require( 'saber-dom' );
     var Emitter = require( 'saber-emitter' );
 
-    var counter = 0x861005;
-
-
-    /**
-     * 控件库配置数据
-     * 
-     * @inner
-     * @type {Object}
-     */
-    var uiConfig = {
-        // 基于已有的DOM结构创建控件时，
-        // ui控件的html attribute前缀
-        uiPrefix: 'data-ui',
-
-        // 控件的默认class前缀
-        uiClassPrefix: 'ui',
-
-        // 控件的状态class前缀
-        stateClassPrefix: 'state'
-    };
 
     /**
      * 控件基类
@@ -130,7 +112,7 @@ define(function ( require ) {
             self.emit( 'beforeinit' );
 
             if ( !self.id && !options.id ) {
-                self.id = getGUID();
+                self.id = ui.getGUID();
             }
 
             self.children = [];
@@ -185,7 +167,7 @@ define(function ( require ) {
 
                 DOM.addClass(
                     this.main,
-                    uiConfig.uiClassPrefix
+                    ui.getConfig( 'uiClassPrefix' )
                     + '-' + this.type.toLowerCase()
                 );
             }
@@ -542,7 +524,7 @@ define(function ( require ) {
             
             DOM.addClass(
                 this.main,
-                uiConfig.uiClassPrefix
+                ui.getConfig( 'uiClassPrefix' )
                 + '-' + this.type.toLowerCase()
                 + '-' + state
             );
@@ -565,7 +547,7 @@ define(function ( require ) {
 
             DOM.removeClass(
                 this.main,
-                uiConfig.uiClassPrefix
+                ui.getConfig( 'uiClassPrefix' )
                 + '-' + this.type.toLowerCase()
                 + '-' + state
             );
@@ -606,34 +588,12 @@ define(function ( require ) {
     Emitter.mixin( Control.prototype );
 
 
-    /**
-     * 配置控件库全局配置
-     * 
-     * @public
-     * @param {Object} info 控件库配置信息对象
-     */
-    Control.config = function( info ) {
-        Lang.extend( uiConfig, info );
-    };
 
 
 
 
     var toString = Object.prototype.toString;
 
-
-
-    /**
-     * 生成全局唯一id
-     * 
-     * @inner
-     * @param {string=} prefix 前缀
-     * @return {string} 新唯一id字符串
-     */
-    function getGUID( prefix ) {
-        prefix = prefix || 'sui';
-        return prefix + counter++;
-    }
 
     /**
      * 判断是否为字符串
@@ -706,21 +666,6 @@ define(function ( require ) {
         return source.charAt( 0 ).toUpperCase()
             + toCamelize( source.slice( 1 ) );
     }
-
-    /**
-     * 方法静态化
-     * 
-     * 反绑定、延迟绑定
-     * @inner
-     * @param {Function} method 待静态化的方法
-     * 
-     * @return {Function} 静态化包装后方法
-     */
-    // function generic( method ) {
-    //     return function () {
-    //         return Function.call.apply( method, arguments );
-    //     };
-    // }
 
 
     return Control;
