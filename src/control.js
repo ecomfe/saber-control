@@ -9,10 +9,9 @@
 define(function ( require ) {
 
     var ui = require( 'saber-ui' );
-    var Lang = require( 'saber-lang' );
-    var DOM = require( 'saber-dom' );
-    var Emitter = require( 'saber-emitter' );
-
+    var lang = require( 'saber-lang' );
+    var dom = require( 'saber-dom' );
+    var emitter = require( 'saber-emitter' );
 
     /**
      * 控件基类
@@ -25,6 +24,7 @@ define(function ( require ) {
      * @requires dom
      * @requires emitter
      * @fires module:Control#beforeinit
+     * @fires module:Control#init
      * @fires module:Control#afterinit
      * @fires module:Control#beforerender
      * @fires module:Control#afterrender
@@ -32,8 +32,14 @@ define(function ( require ) {
      * @fires module:Control#afterdispose
      * @fires module:Control#show
      * @fires module:Control#hide
+     * @fires module:Control#enable
+     * @fires module:Control#disable
      * @fires module:Control#propertychange
      * @param {Object} options 初始化配置参数
+     * @param {string=} options.id 控件标识
+     * @param {HTMLElement=} options.main 控件主元素
+     * @param {string=} options.skin 控件皮肤
+     * @param {*=} options.* 其余初始化参数由各控件自身决定
      */
     var Control = function ( options ) {
         this.initialize.apply( this, arguments );
@@ -41,6 +47,7 @@ define(function ( require ) {
 
     Control.prototype = {
 
+        // 修复构造器引用
         constructor: Control,
 
         /**
@@ -70,6 +77,10 @@ define(function ( require ) {
          * 
          * @protected
          * @param {Object} options 构造函数传入的选项
+         * @param {string=} options.id 控件标识
+         * @param {HTMLElement=} options.main 控件主元素
+         * @param {string=} options.skin 控件皮肤
+         * @param {*=} options.* 其余初始化参数由各控件自身决定
          */
         initOptions: function ( options ) {
             options = options || {};
@@ -99,39 +110,47 @@ define(function ( require ) {
          * 控件初始化
          * 
          * @protected
-         * @param {Object} options 配置参数
+         * @param {Object} options 构造函数传入的配置参数
+         * @param {string=} options.id 控件标识
+         * @param {HTMLElement=} options.main 控件主元素
+         * @param {string=} options.skin 控件皮肤
+         * @param {*=} options.* 其余初始化参数由各控件自身决定
          * @fires module:Control#beforeinit
+         * @fires module:Control#init
          * @fires module:Control#afterinit
          */
-        initialize: function ( options ) {
-            var self = this;
-            
+        initialize: function ( options ) {            
             options = options || {};
 
-            self.initOptions( options );
+            this.initOptions( options );
 
             /**
              * @event module:Control#beforeinit
              */
-            self.emit( 'beforeinit' );
+            this.emit( 'beforeinit' );
 
-            if ( !self.id && !options.id ) {
-                self.id = ui.getGUID();
+            if ( !this.id && !options.id ) {
+                this.id = ui.getGUID();
             }
 
-            self.children = [];
-            self.states = {};
+            this.children = [];
+            this.states = {};
 
-            self.main = options.main ? options.main : self.createMain();
+            this.main = options.main ? options.main : this.createMain();
 
-            if ( isFunction( self.init ) ) {
-                self.init( options );
+            if ( isFunction( this.init ) ) {
+                this.init( options );
             }
+
+            /**
+             * @event module:Control#init
+             */
+            this.emit( 'init' );
 
             /**
              * @event module:Control#afterinit
              */
-            self.emit( 'afterinit' );
+            this.emit( 'afterinit' );
         },
 
         /**
@@ -141,7 +160,7 @@ define(function ( require ) {
          * @param {Object} options 构造函数传入的配置参数
          * @return {HTMLElement}
          */
-        createMain: function( options ) {
+        createMain: function ( options ) {
             return document.createElement('div');
         },
 
@@ -169,7 +188,7 @@ define(function ( require ) {
                     document.body.appendChild( this.main );
                 }
 
-                DOM.addClass(
+                dom.addClass(
                     this.main,
                     ui.getConfig( 'uiClassPrefix' )
                     + '-' + this.type.toLowerCase()
@@ -193,7 +212,7 @@ define(function ( require ) {
          * @protected
          * @param {Object=} changes 变更过的属性的集合
          */
-        repaint: function( changes ) {
+        repaint: function ( changes ) {
             // throw new Error( 'not implement repaint' );
             var method;
 
@@ -226,10 +245,25 @@ define(function ( require ) {
                 child.dispose();
             }
 
+            // 清理子控件存储器
+            this.children = null;
+
+            // TODO
+            // 清理DOM事件绑定
+            cleanDOMEvents( this );
+
+            // 若存在父控件，则从父控件树中移除
+            if ( this.parent ) {
+                this.parent.removeChild( this );
+            }
+
             /**
              * @event module:Control#afterdispose
              */
             this.emit( 'afterdispose' );
+
+            // 清理自定义事件和监听器
+            this.off();
         },
 
         /**
@@ -480,7 +514,15 @@ define(function ( require ) {
          * @return {module:Control} 获取到的子控件 
          */
         getChild: function( childName ) {
-            // TODO
+            var children = this.children;
+
+            childName = childName || control.childName;
+
+            if ( childName ) {
+                children[nane] = control;
+            }
+
+            children.push(control);
         },
 
         /**
@@ -526,7 +568,7 @@ define(function ( require ) {
 
             this.states[ state ] = true;
             
-            DOM.addClass(
+            dom.addClass(
                 this.main,
                 ui.getConfig( 'uiClassPrefix' )
                 + '-' + this.type.toLowerCase()
@@ -549,7 +591,7 @@ define(function ( require ) {
             
             delete this.states[ state ];
 
-            DOM.removeClass(
+            dom.removeClass(
                 this.main,
                 ui.getConfig( 'uiClassPrefix' )
                 + '-' + this.type.toLowerCase()
@@ -588,8 +630,47 @@ define(function ( require ) {
 
     };
 
-    // 混入 Emitter 支持
-    Emitter.mixin( Control.prototype );
+    // 混入 emitter 支持
+    emitter.mixin( Control.prototype );
+
+
+    
+    /**
+     * Control原型的emit方法引用
+     * 其是`Emitter`的`emit`方法`mixin`复制而来
+     * 
+     * @type {Function}
+     */
+    var orignEmit = Control.prototype.emit;
+    
+    /**
+     * 触发自定义事件
+     * 注: 监听器方法调用时第一个参数为
+     *    { `type`: 事件类型, `target`: 触发事件的控件对象 }
+     * 
+     * @override
+     * @param {string} event 事件名
+     * @param {...*} * 传递给监听器的参数，可以有多个
+     * @example
+     * // 很多类型事件监听的场景下，可共享同一个 handler 简化代码
+     * var handler = function( ev ) {
+     *     var args = [].slice.call( arguments, 1 );
+     *     console.info( 'event[%s]: ', ev.type, args );
+     * };
+     * var b = new Button( { content: 'test', onInit: handler } );
+     * b.on( 'propertychange', handler);
+     * b.render();
+     * b.set( 'content', 'foo' );
+     * @return {Emitter}
+     */
+    Control.prototype.emit = function ( type ) {
+        orignEmit.apply(
+            this,
+            [ type, { type: type, target: this } ].concat(
+                [].slice.call( arguments, 1 )
+            )
+        );
+    };
 
 
 
@@ -672,5 +753,19 @@ define(function ( require ) {
     }
 
 
+    /**
+     * 清除控件管理的DOM元素上的事件
+     * 
+     * @inner
+     * @param {Control} control 控件实例
+     * @param {HTMLElement=} element 控件管理的DOM元素，
+     * 如果没有此参数则去除所有该控件管理的元素的DOM事件
+     */
+    function cleanDOMEvents( control, element ) {
+        // TODO
+    }
+
+
     return Control;
-} );
+
+});
