@@ -12,6 +12,7 @@ define(function ( require ) {
     var lang = require( 'saber-lang' );
     var dom = require( 'saber-dom' );
     var emitter = require( 'saber-emitter' );
+    var helper = require( './helper' );
 
     /**
      * 控件基类
@@ -23,6 +24,7 @@ define(function ( require ) {
      * @requires lang
      * @requires dom
      * @requires emitter
+     * @requires module:helper
      * @fires module:Control#beforeinit
      * @fires module:Control#init
      * @fires module:Control#afterinit
@@ -119,7 +121,10 @@ define(function ( require ) {
          * @fires module:Control#init
          * @fires module:Control#afterinit
          */
-        initialize: function ( options ) {            
+        initialize: function ( options ) {
+
+            if ( this.initialized ) return;
+
             options = options || {};
 
             this.initOptions( options );
@@ -130,7 +135,7 @@ define(function ( require ) {
             this.emit( 'beforeinit' );
 
             if ( !this.id && !options.id ) {
-                this.id = ui.getGUID();
+                this.id = helper.getGUID();
             }
 
             this.children = [];
@@ -151,6 +156,8 @@ define(function ( require ) {
              * @event module:Control#afterinit
              */
             this.emit( 'afterinit' );
+
+            this.initialized = true;
         },
 
         /**
@@ -188,13 +195,22 @@ define(function ( require ) {
                     document.body.appendChild( this.main );
                 }
 
-                dom.addClass(
-                    this.main,
-                    ui.getConfig( 'uiClassPrefix' )
-                    + '-' + this.type.toLowerCase()
+                // 为控件主元素添加id属性
+                if ( !this.main.id ) {
+                    this.main.id = helper.getId( this );
+                }
+
+                // 为控件主元素添加控件实例标识属性
+                this.main.setAttribute(
+                    ui.getConfig( 'instanceAttr' ),
+                    this.id
                 );
+
+                // 为控件主元素添加控件相关的class
+                helper.addClasses( this );
             }
 
+            // 由子类根据需要覆盖扩展
             this.repaint();
 
             if ( !rendered ) {
@@ -240,22 +256,7 @@ define(function ( require ) {
              */
             this.emit( 'beforedispose' );
 
-            var child;
-            while ( ( child = this.children.pop() ) ) {
-                child.dispose();
-            }
-
-            // 清理子控件存储器
-            this.children = null;
-
-            // TODO
-            // 清理DOM事件绑定
-            cleanDOMEvents( this );
-
-            // 若存在父控件，则从父控件树中移除
-            if ( this.parent ) {
-                this.parent.removeChild( this );
-            }
+            helper.dispose( this );
 
             /**
              * @event module:Control#afterdispose
@@ -567,13 +568,15 @@ define(function ( require ) {
             if ( this.hasState( state ) ) return;
 
             this.states[ state ] = true;
+
+            helper.addStateClasses( this, state );
             
-            dom.addClass(
-                this.main,
-                ui.getConfig( 'uiClassPrefix' )
-                + '-' + this.type.toLowerCase()
-                + '-' + state
-            );
+            // dom.addClass(
+            //     this.main,
+            //     ui.getConfig( 'uiClassPrefix' )
+            //     + '-' + this.type.toLowerCase()
+            //     + '-' + state
+            // );
 
             var properties = {};
             properties[ state ] = true;
@@ -591,12 +594,14 @@ define(function ( require ) {
             
             delete this.states[ state ];
 
-            dom.removeClass(
-                this.main,
-                ui.getConfig( 'uiClassPrefix' )
-                + '-' + this.type.toLowerCase()
-                + '-' + state
-            );
+            helper.removeStateClasses( this, state );
+
+            // dom.removeClass(
+            //     this.main,
+            //     ui.getConfig( 'uiClassPrefix' )
+            //     + '-' + this.type.toLowerCase()
+            //     + '-' + state
+            // );
 
             var properties = {};
             properties[ state ] = false;
@@ -626,6 +631,44 @@ define(function ( require ) {
          */
         hasState: function( state ) {
             return !!this.states[ state ];
+        },
+
+
+
+        /**
+         * 为控件管理的DOM元素添加DOM事件
+         * 
+         * @public
+         * @param {HTMLElement} element 需要添加事件的DOM元素
+         * @param {string} type 事件的类型
+         * @param {function} handler 事件处理函数
+         */
+        addDOMEvent: function ( element, type, handler ) {
+            helper.addDOMEvent( this, element, type, handler );
+        },
+
+        /**
+         * 为控件管理的DOM元素添加DOM事件
+         * 
+         * @public
+         * @param {HTMLElement} element 需要添加事件的DOM元素
+         * @param {string} type 事件的类型
+         * @param {function} handler 事件处理函数
+         */
+        removeDOMEvent: function ( element, type, handler ) {
+            helper.removeDOMEvent( this, element, type, handler );
+        },
+
+        /**
+         * 清除控件管理的DOM元素上的事件
+         * 
+         * @public
+         * @param {Control} control 控件实例
+         * @param {HTMLElement=} element 控件管理的DOM元素，
+         * 如果没有此参数则去除所有该控件管理的元素的DOM事件
+         */
+        clearDOMEvents: function ( element ) {
+            helper.clearDOMEvents( this, element );
         }
 
     };
@@ -752,18 +795,6 @@ define(function ( require ) {
             + toCamelize( source.slice( 1 ) );
     }
 
-
-    /**
-     * 清除控件管理的DOM元素上的事件
-     * 
-     * @inner
-     * @param {Control} control 控件实例
-     * @param {HTMLElement=} element 控件管理的DOM元素，
-     * 如果没有此参数则去除所有该控件管理的元素的DOM事件
-     */
-    function cleanDOMEvents( control, element ) {
-        // TODO
-    }
 
 
     return Control;
