@@ -168,7 +168,7 @@ define(function ( require ) {
      * @public
      * @param {Control} control 控件实例
      */
-    helper.removePartClasses = function ( control ) {
+    helper.removeClasses = function ( control ) {
         if ( control.main ) {
             removeClasses( control.main, helper.getClasses( control ) );
         }

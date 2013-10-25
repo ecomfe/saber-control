@@ -566,17 +566,9 @@ define(function ( require ) {
          */
         addState: function ( state ) {
             if ( this.hasState( state ) ) return;
-
             this.states[ state ] = true;
 
             helper.addStateClasses( this, state );
-            
-            // dom.addClass(
-            //     this.main,
-            //     ui.getConfig( 'uiClassPrefix' )
-            //     + '-' + this.type.toLowerCase()
-            //     + '-' + state
-            // );
 
             var properties = {};
             properties[ state ] = true;
@@ -591,17 +583,9 @@ define(function ( require ) {
          */
         removeState: function ( state ) {
             if ( !this.hasState( state ) ) return;
-            
             delete this.states[ state ];
 
             helper.removeStateClasses( this, state );
-
-            // dom.removeClass(
-            //     this.main,
-            //     ui.getConfig( 'uiClassPrefix' )
-            //     + '-' + this.type.toLowerCase()
-            //     + '-' + state
-            // );
 
             var properties = {};
             properties[ state ] = false;
