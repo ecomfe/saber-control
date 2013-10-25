@@ -308,45 +308,44 @@ define(function ( require ) {
         var listeners = events[ type ];
         if ( !listeners ) {
             listeners = events[ type ] = [];
-            // if ( !isGlobal ) {
-                element.addEventListener( type, handler );
-            // }
         }
+
+        element.addEventListener( type, handler, false );
 
         listeners.push( handler );
     };
 
     /**
-     * 为控件管理的DOM元素添加DOM事件
+     * 为控件管理的DOM元素移除DOM事件
      * 
      * @public
      * @param {Control} control 控件实例
-     * @param {HTMLElement} element 需要添加事件的DOM元素
+     * @param {HTMLElement} element 需要删除事件的DOM元素
      * @param {string} type 事件的类型
-     * @param {Function} handler 事件处理函数
+     * @param {Function=} handler 事件处理函数
+     * 如果没有此参数则移除该控件管理的元素的所有`type`DOM事件
      */
     helper.removeDOMEvent = function ( control, element, type, handler ) {
         if ( !control.domEvents ) {
             return;
         }
 
-        var guid = element[ domEventsKey ];
-        var events = control.domEvents[ guid ];
+        var events = control.domEvents[ element[ domEventsKey ] ];
 
         if ( !events || !events[ type ] ) {
             return;
         }
 
-        var queue = events[ type ];
-        for ( var i = 0; i < queue.length; i++ ) {
-            if ( !handler || queue[i] === handler ) {
-                element.removeEventListener( type, queue[i] );
-                queue.splice( i, 1 );
-                // 可能有重复注册的，所以要继续循环
-                i--;
+        events[ type ].forEach(
+            function ( fn ) {
+                // 
+                if ( !handler || fn === handler ) {
+                    element.removeEventListener( type, fn, false );    
+                }
             }
-        }
+        );
 
+        delete events[ type ];
     };
 
     /**
@@ -362,18 +361,20 @@ define(function ( require ) {
             return;
         }
 
+        var guid, events;
+
         if ( !element ) {
-            for ( var guid in control.domEvents ) {
+            for ( guid in control.domEvents ) {
                 if ( control.domEvents.hasOwnProperty( guid ) ) {
-                    var events = control.domEvents[ guid ];
+                    events = control.domEvents[ guid ];
                     helper.clearDOMEvents( control, events.element );
                 }
             }
             return;
         }
 
-        var guid = element[ domEventsKey ];
-        var events = control.domEvents[ guid ];
+        guid = element[ domEventsKey ];
+        events = control.domEvents[ guid ];
 
         // `events`中存放着各事件类型，只有`element`属性是一个DOM对象，
         // 因此要删除`element`这个键，
@@ -381,12 +382,7 @@ define(function ( require ) {
         delete events.element;
         for ( var type in events ) {
             if ( events.hasOwnProperty( type ) ) {
-                var queue = events[ type ];
-                for ( var i = 0; i < queue.length; i++ ) {
-                    helper.removeDOMEvent(
-                        control, element, type, queue[ i ]
-                    );
-                }
+                helper.removeDOMEvent( control, element, type );
             }
         }
         delete control.domEvents[ guid ];
