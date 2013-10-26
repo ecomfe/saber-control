@@ -143,6 +143,9 @@ define(function ( require ) {
 
             this.main = options.main ? options.main : this.createMain();
 
+            // 存储实例
+            ui.add( this );
+
             if ( isFunction( this.init ) ) {
                 this.init( options );
             }

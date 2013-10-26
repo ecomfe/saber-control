@@ -258,11 +258,19 @@ define(function ( require ) {
         if ( control.parent ) {
             control.parent.removeChild( control );
         }
+
+        // 删除实例存储
+        ui.remove( control );
     };
 
 
 
-
+    /**
+     * DOM事件存储器键值
+     * 紧为控件管理的DOM元素使用，存储在控件实例上
+     * 
+     * @type {string}
+     */
     var domEventsKey = '_uiDOMEvent';
 
     /**
