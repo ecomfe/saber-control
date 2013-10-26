@@ -131,6 +131,9 @@ define(function ( require ) {
 
             /**
              * @event module:Control#beforeinit
+             * @param {Object} ev 事件参数对象
+             * @param {string} ev.type 事件类型
+             * @param {Control} ev.target 触发事件的控件对象
              */
             this.emit( 'beforeinit' );
 
@@ -152,11 +155,17 @@ define(function ( require ) {
 
             /**
              * @event module:Control#init
+             * @param {Object} ev 事件参数对象
+             * @param {string} ev.type 事件类型
+             * @param {Control} ev.target 触发事件的控件对象
              */
             this.emit( 'init' );
 
             /**
              * @event module:Control#afterinit
+             * @param {Object} ev 事件参数对象
+             * @param {string} ev.type 事件类型
+             * @param {Control} ev.target 触发事件的控件对象
              */
             this.emit( 'afterinit' );
 
@@ -190,6 +199,9 @@ define(function ( require ) {
 
                 /**
                  * @event module:Control#beforerender
+                 * @param {Object} ev 事件参数对象
+                 * @param {string} ev.type 事件类型
+                 * @param {Control} ev.target 触发事件的控件对象
                  */
                 this.emit( 'beforerender' );
 
@@ -219,6 +231,9 @@ define(function ( require ) {
             if ( !rendered ) {
                 /**
                  * @event module:Control#afterrender
+                 * @param {Object} ev 事件参数对象
+                 * @param {string} ev.type 事件类型
+                 * @param {Control} ev.target 触发事件的控件对象
                  */
                 this.emit( 'afterrender' );
             }
@@ -256,6 +271,9 @@ define(function ( require ) {
         dispose: function () {
             /**
              * @event module:Control#beforedispose
+             * @param {Object} ev 事件参数对象
+             * @param {string} ev.type 事件类型
+             * @param {Control} ev.target 触发事件的控件对象
              */
             this.emit( 'beforedispose' );
 
@@ -263,6 +281,9 @@ define(function ( require ) {
 
             /**
              * @event module:Control#afterdispose
+             * @param {Object} ev 事件参数对象
+             * @param {string} ev.type 事件类型
+             * @param {Control} ev.target 触发事件的控件对象
              */
             this.emit( 'afterdispose' );
 
@@ -306,6 +327,9 @@ define(function ( require ) {
 
             /**
              * @event module:Control#enable
+             * @param {Object} ev 事件参数对象
+             * @param {string} ev.type 事件类型
+             * @param {Control} ev.target 触发事件的控件对象
              */
             this.emit( 'enable' );
         },
@@ -323,6 +347,9 @@ define(function ( require ) {
 
             /**
              * @event module:Control#disable
+             * @param {Object} ev 事件参数对象
+             * @param {string} ev.type 事件类型
+             * @param {Control} ev.target 触发事件的控件对象
              */
             this.emit( 'disable' );
         },
@@ -360,6 +387,9 @@ define(function ( require ) {
 
             /**
              * @event module:Control#show
+             * @param {Object} ev 事件参数对象
+             * @param {string} ev.type 事件类型
+             * @param {Control} ev.target 触发事件的控件对象
              */
             this.emit( 'show' );
         },
@@ -377,6 +407,9 @@ define(function ( require ) {
 
             /**
              * @event module:Control#hide
+             * @param {Object} ev 事件参数对象
+             * @param {string} ev.type 事件类型
+             * @param {Control} ev.target 触发事件的控件对象
              */
             this.emit( 'hide' );
         },
@@ -502,6 +535,10 @@ define(function ( require ) {
 
                 /**
                  * @event module:Control#propertychange
+                 * @param {Object} ev 事件参数对象
+                 * @param {string} ev.type 事件类型
+                 * @param {Control} ev.target 触发事件的控件对象
+                 * @param {Object} changes 变更过的属性的集合
                  */
                 this.emit( 'propertychange', changes );
             }
