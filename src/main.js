@@ -247,11 +247,10 @@ define(function ( require ) {
          * @param {Object=} changes 变更过的属性的集合
          */
         repaint: function ( changes ) {
-            // throw new Error( 'not implement repaint' );
             var method;
 
             if ( changes && changes.hasOwnProperty( 'disabled' ) ) {
-                method = this.diabled ? 'addState' : 'removeState';
+                method = this.disabled ? 'addState' : 'removeState';
                 this[ method ]( 'disabled' );
             }
 
@@ -269,6 +268,10 @@ define(function ( require ) {
          * @fires module:Control#afterdispose
          */
         dispose: function () {
+            if ( this.disposed ) {
+                return;
+            }
+
             /**
              * @event module:Control#beforedispose
              * @param {Object} ev 事件参数对象
@@ -289,6 +292,9 @@ define(function ( require ) {
 
             // 清理自定义事件和监听器
             this.off();
+
+            // 做标记
+            this.disposed = true;
         },
 
         /**
@@ -321,7 +327,11 @@ define(function ( require ) {
          * @fires module:Control#enable
          */
         enable: function () {
-            this.disabled = false;
+            // this.disabled = false;
+            
+            if ( !this.isDisabled() ) {
+                return;
+            }
 
             this.removeState( 'disabled' );
 
@@ -341,7 +351,11 @@ define(function ( require ) {
          * @fires module:Control#disable
          */
         disable: function () {
-            this.disabled = true;
+            // this.disabled = true;
+
+            if ( this.isDisabled() ) {
+                return;
+            }
 
             this.addState( 'disabled' );
 
@@ -381,7 +395,9 @@ define(function ( require ) {
          * @fires module:Control#show
          */
         show: function() {
-            this.hidden = false;
+            if ( !this.isHidden() ) {
+                return;
+            }
 
             this.removeState( 'hidden' );
 
@@ -401,7 +417,9 @@ define(function ( require ) {
          * @fires module:Control#hide
          */
         hide: function() {
-            this.hidden = true;
+            if ( this.isHidden() ) {
+                return;
+            }
 
             this.addState( 'hidden' );
 
@@ -492,12 +510,19 @@ define(function ( require ) {
          */
         setProperties: function ( properties ) {
             // 确保只有在渲染以前（`initOptions`调用时）才允许设置id
-            if ( properties.hasOwnProperty( 'id' ) ) {
-                if ( !this.rendered ) {
+            if ( !this.rendered ) {
+                if ( properties.hasOwnProperty( 'id' ) ) {
                     this.id = properties.id;
-                    delete properties.id;
+                }
+
+                if ( properties.hasOwnProperty( 'skin' ) ) {
+                    this.skin = properties.skin;
                 }
             }
+
+            delete properties.id;
+            delete properties.skin;
+
 
             // 确保几个状态选项值为`boolean`类型
             // `diabled`, `hidden`
@@ -505,7 +530,7 @@ define(function ( require ) {
                 if ( properties.hasOwnProperty( booleanKey ) ) {
                     properties[ booleanKey ] = !!properties[ booleanKey ];
                 }
-            } );
+            });
 
             var changes = {}, hasChanged, oldValue, newValue;
             for ( var key in properties ) {
@@ -606,7 +631,7 @@ define(function ( require ) {
          */
         addState: function ( state ) {
             if ( this.hasState( state ) ) return;
-            this.states[ state ] = true;
+            this.states[ state ] = 1;
 
             helper.addStateClasses( this, state );
 
@@ -731,12 +756,22 @@ define(function ( require ) {
      * @return {Emitter}
      */
     Control.prototype.emit = function ( type ) {
-        orignEmit.apply(
-            this,
-            [ type, { type: type, target: this } ].concat(
-                [].slice.call( arguments, 1 )
-            )
-        );
+        // 构造事件参数对象
+        var ev = { type: type, target: this };
+        
+        // 构造新调用参数序列
+        var args = [ ev ].concat( [].slice.call( arguments, 1 ) );
+
+        // 先调用直接写在实例上的 "onxxx"
+        var handler = this[ 'on' + type ];
+        if ( 'function' === typeof handler ) {
+            handler.apply( this, args );
+        }
+
+        // 然后调用 `Emitter`.`emit` 方法
+        // 使用调整后的新参数序列:
+        // `type`, `ev`, `args`...
+        orignEmit.apply( this, [ type ].concat( args ) );
     };
 
 
