@@ -9,6 +9,7 @@
         <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/1-6-6/esl.js"></script>
     </head>
     <body>
+        <div id="demo" style="display: none;"></div>
         <script>
         require.config({
             packages: [
@@ -51,7 +52,7 @@
                 return htmlReporter.specFilter(spec);
             };
 
-            require( [ 'control.test' ], function() {
+            require( [ 'helper.test', 'control.test' ], function() {
                 jasmineEnv.execute();
             });
         })();

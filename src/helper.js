@@ -58,6 +58,33 @@ define(function ( require ) {
             + control.id;
     };
 
+    /**
+     * 销毁控件
+     * 
+     * @public
+     * @param {Control} control 控件实例
+     */
+    helper.dispose = function ( control ) {
+        var child;
+        while ( ( child = control.children.pop() ) ) {
+            child.dispose();
+        }
+
+        // 清理子控件存储器
+        control.children = null;
+
+        // 清理DOM事件绑定
+        helper.clearDOMEvents( control );
+
+        // 若存在父控件，则从父控件树中移除
+        if ( control.parent ) {
+            control.parent.removeChild( control );
+        }
+
+        // 删除实例存储
+        ui.remove( control );
+    };
+
 
 
 
@@ -232,36 +259,6 @@ define(function ( require ) {
         }
     };
 
-
-
-
-
-    /**
-     * 销毁控件
-     * 
-     * @public
-     * @param {Control} control 控件实例
-     */
-    helper.dispose = function ( control ) {
-        var child;
-        while ( ( child = control.children.pop() ) ) {
-            child.dispose();
-        }
-
-        // 清理子控件存储器
-        control.children = null;
-
-        // 清理DOM事件绑定
-        helper.clearDOMEvents( control );
-
-        // 若存在父控件，则从父控件树中移除
-        if ( control.parent ) {
-            control.parent.removeChild( control );
-        }
-
-        // 删除实例存储
-        ui.remove( control );
-    };
 
 
 
