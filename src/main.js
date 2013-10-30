@@ -24,7 +24,7 @@ define(function ( require ) {
      * @requires lang
      * @requires dom
      * @requires emitter
-     * @requires module:helper
+     * @requires module:Control~helper
      * @fires module:Control#beforeinit
      * @fires module:Control#init
      * @fires module:Control#afterinit

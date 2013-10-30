@@ -14,7 +14,6 @@ define(function ( require ) {
     /**
      * 控件基类helper方法模块
      * 
-     * @exports helper
      * @requires ui
      * @requires dom
      */
