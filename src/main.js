@@ -184,6 +184,14 @@ define(function ( require ) {
         },
 
         /**
+         * 初始化DOM结构，仅在第一次渲染时调用
+         * 
+         * @protected
+         */
+        initStructure: function () {
+        },
+
+        /**
          * 渲染控件
          * 
          * @protected
@@ -205,6 +213,8 @@ define(function ( require ) {
                  */
                 this.emit( 'beforerender' );
 
+                this.initStructure();
+
                 if ( !this.options.main
                     && !document.body.contains( this.main ) ) {
                     document.body.appendChild( this.main );
@@ -222,7 +232,7 @@ define(function ( require ) {
                 );
 
                 // 为控件主元素添加控件相关的class
-                helper.addClasses( this );
+                helper.addPartClasses( this );
             }
 
             // 由子类根据需要覆盖扩展

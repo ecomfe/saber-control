@@ -14,6 +14,7 @@ define(function ( require ) {
     /**
      * 控件基类helper方法模块
      * 
+     * @exports module:Control~helper
      * @requires ui
      * @requires dom
      */
@@ -45,16 +46,18 @@ define(function ( require ) {
      * 
      * @public
      * @param {Control} control 控件实例
+     * @param {string=} part 控件内部件名称
      * @return {string} 
      */
-    helper.getId = function ( control ) {
+    helper.getId = function ( control, part ) {
         var prefix = control.domIDPrefix
             ? control.domIDPrefix + '-'
             : '';
 
         return ui.getConfig( 'idAttrPrefix' ) + '-'
             + prefix
-            + control.id;
+            + control.id
+            + (part ? '-' + part : '');
     };
 
     /**
@@ -147,30 +150,43 @@ define(function ( require ) {
      * 
      * @public
      * @param {Control} control 控件实例
+     * @param {string=} part 控件内部件名称
      * @return {Array.<string>}
      */
-    helper.getClasses = function ( control ) {
+    helper.getPartClasses = function ( control, part ) {
         // main:
         //   ui-{commonCls} 为了定义有限全局的normalize
         //   ui-{type}
         //   skin-{skinname}
-        //   skin-{skinname}-{type}
+        //   skin-{skinname}-{type}  移动端暂时废弃( .ui-{type}.skin-{skinname} )
+        // part:
+        //   ui-{type}-{part}
+        //   skin-{skinname}-{type}-{part}
 
         var type = getControlClassType( control );
         var skin = control.skin;
         var prefix = ui.getConfig( 'uiClassPrefix' );
         var skinPrefix = ui.getConfig( 'skinClassPrefix' );
         var commonCls = ui.getConfig( 'uiClassControl' );
-        var classes = [
-            joinByStrike( prefix, commonCls ),
-            joinByStrike( prefix, type )
-        ];
+        var classes = [];
 
-        if ( skin ) {
+        if ( part ) {
+            classes.push( joinByStrike( prefix, type, part ) );
+            if ( skin ) {
+                classes.push( joinByStrike( skinPrefix, skin, type, part ) );
+            }
+        }
+        else {
             classes.push(
-                joinByStrike( skinPrefix, skin ),
-                joinByStrike( skinPrefix, skin, type )
+                joinByStrike( prefix, commonCls ),
+                joinByStrike( prefix, type )
             );
+            if ( skin ) {
+                classes.push(
+                    joinByStrike( skinPrefix, skin ),
+                    joinByStrike( skinPrefix, skin, type )
+                );
+            }
         }
 
         return classes;
@@ -181,10 +197,16 @@ define(function ( require ) {
      * 
      * @public
      * @param {Control} control 控件实例
+     * @param {string=} part 控件内部件名称
+     * @param {HTMLElement=} element 控件内部件元素
      */
-    helper.addClasses = function ( control ) {
+    helper.addPartClasses = function ( control, part, element ) {
+        element = element || control.main;
         if ( control.main ) {
-            addClasses( control.main, helper.getClasses( control ) );
+            addClasses(
+                element,
+                helper.getPartClasses( control, part )
+            );
         }
     };
 
@@ -193,10 +215,16 @@ define(function ( require ) {
      * 
      * @public
      * @param {Control} control 控件实例
+     * @param {string=} part 控件内部件名称
+     * @param {HTMLElement=} element 控件内部件元素
      */
-    helper.removeClasses = function ( control ) {
+    helper.removePartClasses = function ( control, part, element ) {
+        element = element || control.main;
         if ( control.main ) {
-            removeClasses( control.main, helper.getClasses( control ) );
+            removeClasses(
+                element,
+                helper.getPartClasses( control, part, element )
+            );
         }
     };
 

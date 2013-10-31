@@ -21,15 +21,15 @@ define(function( require ) {
 
         describe( 'class', function() {
 
-            it( '`getClasses`', function() {
+            it( '`getPartClasses`', function() {
                 expect( true ).toBe( true );
             });
 
-            it( '`addClasses`', function() {
+            it( '`addPartClasses`', function() {
                 expect( true ).toBe( true );
             });
 
-            it( '`removeClasses`', function() {
+            it( '`removePartClasses`', function() {
                 expect( true ).toBe( true );
             });
 
