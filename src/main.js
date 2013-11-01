@@ -199,7 +199,6 @@ define(function ( require ) {
          * @fires module:Control#afterrender
          */
         render: function () {
-            // throw new Error( 'not implement render' );
             var rendered = this.rendered;
 
             if ( !rendered ) {
@@ -259,12 +258,12 @@ define(function ( require ) {
         repaint: function ( changes ) {
             var method;
 
-            if ( changes && changes.hasOwnProperty( 'disabled' ) ) {
+            if ( !changes || changes.hasOwnProperty( 'disabled' ) ) {
                 method = this.disabled ? 'addState' : 'removeState';
                 this[ method ]( 'disabled' );
             }
 
-            if ( changes && changes.hasOwnProperty( 'hidden' ) ) {
+            if ( !changes || changes.hasOwnProperty( 'hidden' ) ) {
                 method = this.hidden ? 'addState' : 'removeState';
                 this[ method ]( 'hidden' );
             }
@@ -643,6 +642,10 @@ define(function ( require ) {
             if ( this.hasState( state ) ) return;
             this.states[ state ] = 1;
 
+            if ( state === 'disabled' ) {
+                this.main.setAttribute( state, state );
+            }
+
             helper.addStateClasses( this, state );
 
             var properties = {};
@@ -659,6 +662,10 @@ define(function ( require ) {
         removeState: function ( state ) {
             if ( !this.hasState( state ) ) return;
             delete this.states[ state ];
+
+            if ( state === 'disabled' ) {
+                this.main.removeAttribute( state );
+            }
 
             helper.removeStateClasses( this, state );
 
