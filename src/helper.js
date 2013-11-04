@@ -202,7 +202,7 @@ define(function ( require ) {
      */
     helper.addPartClasses = function ( control, part, element ) {
         element = element || control.main;
-        if ( control.main ) {
+        if ( element ) {
             addClasses(
                 element,
                 helper.getPartClasses( control, part )
@@ -220,7 +220,7 @@ define(function ( require ) {
      */
     helper.removePartClasses = function ( control, part, element ) {
         element = element || control.main;
-        if ( control.main ) {
+        if ( element ) {
             removeClasses(
                 element,
                 helper.getPartClasses( control, part, element )

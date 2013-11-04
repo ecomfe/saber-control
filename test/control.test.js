@@ -1,16 +1,39 @@
 define(function( require ) {
 
+    var helper = require( 'saber-control/helper' );
     var Control = require( 'saber-control' );
 
 
     describe( 'Control', function() {
 
-        describe( 'Public API' , function () {
+        it( 'should be instantiatable', function () {
+            var c = new Control();
+            expect( typeof c ).toEqual( 'object' );
+            expect( c instanceof Control ).toBeTruthy();
+        });
 
-            it( '`new`', function () {
-                var c = new Control();
-                expect( c instanceof Control ).toBeTruthy();
-            });
+        describe('should have public methods', function () {
+            var c = new Control();
+            var methods = [
+                'repaint', 'initStructure', 'dispose',
+                'createMain', 'render', 'appendTo', 'insertBefore',
+                'get', 'set', 'setProperties',
+                'disable', 'enable', 'isDisabled',
+                'show', 'hide', 'toggle', 'isHidden',
+                'addState', 'removeState', 'toggleState', 'hasState',
+                'addChild', 'removeChild', 'getChild', 'initChildren',
+                'on', 'off', 'emit'
+            ];
+            methods.forEach(
+                function ( method ) {
+                    it( '`' + method + '`', function () {
+                        expect( typeof c[ method ] ).toEqual( 'function' );
+                    });
+                }
+            );
+        });
+
+        describe( 'api' , function () {
 
             it( '`get`', function () {
                 var c = new Control({
@@ -111,7 +134,7 @@ define(function( require ) {
 
         });
 
-        describe( 'Event API', function () {
+        describe( 'event by `emitter`', function () {
             var events = {};
             var handler = function ( ev ) {
                 events[ ev.type ] = arguments.length > 1
@@ -217,37 +240,127 @@ define(function( require ) {
                 ).toEqual( 'baz' );
             });
 
+            describe( 'when event is emited', function () {
+                var control;
+                var handler;
+                // var backupHandler;
+                var queue = [];
+                beforeEach( function () {
+                    control = new Control();
+                    handler = jasmine.createSpy();
+                    // backupHandler = jasmine.createSpy();
+                    control.on( 'name', handler );
+                    control.emit( 'name', { x: 1 } );
+                });
+
+                it( 'should call added handler when event is fired', function () {
+                    expect( handler ).toHaveBeenCalled();
+                });
+
+                it( 'should pass a `type` property in event args[0]', function () {
+                    expect(
+                        handler.mostRecentCall.args[ 0 ].type
+                    ).toBe( 'name' );
+                });
+
+                it( 'should pass a `target` property in event args[0]', function () {
+                    expect(
+                        handler.mostRecentCall.args[ 0 ].target
+                    ).toBe( control );
+                });
+
+                it( 'should pass extra properties in event args[1]', function () {
+                    expect(
+                        handler.mostRecentCall.args[ 1 ].x
+                    ).toBe( 1 );
+                });
+
+                // it('should call handler added via `*` event when any event is fired', function () {
+                //     expect( backupHandler ).toHaveBeenCalled();
+                // });
+
+                // it( 'should give the original `type` property in handler added via `*` event', function () {
+                //     expect(
+                //         backupHandler.mostRecentCall.args[ 0 ].type
+                //     ).toBe( 'name' );
+                // });
+            
+                it( 'should be able to remove an event handler', function () {
+                    var control = new Control();
+                    expect(function() {
+                        control.off( 'name', function () {} );
+                    }).not.toThrow();
+                });
+
+                it( 'should call handlers by order', function () {
+                    var queue = [];
+                    var control = new Control();
+                    control.on( 'name', function () { queue.push( 'a' ); } );
+                    control.on( 'name', function () { queue.push( 'b' ); } );
+                    control.on( 'name', function () { queue.push( 'c' ); } );
+                    control.emit( 'name' );
+                    expect( queue.join( '' ) ).toBe( 'abc' );
+                });
+
+                // it( 'should call handlers added via `*` event after those added via named event', function () {
+                //     var queue = [];
+                //     var control = new Control();
+                //     control.on( '*', function() { queue.push( 'b' ); } );
+                //     control.on( 'name', function() { queue.push( 'a' ); } );
+                //     control.emit( 'name');
+                //     expect( queue.join('') ).toBe( 'ab' );
+                // });
+
+                it( 'should not call removed event handlers', function () {
+                    var control = new Control();
+                    var handler = jasmine.createSpy();
+                    control.on( 'name', handler );
+                    control.off( 'name', handler );
+                    control.emit( 'name');
+                    expect( handler ).not.toHaveBeenCalled();
+                });
+
+                it( 'should remove all event handlers when only the event name is passed to `un` method', function () {
+                    var control = new Control();
+                    var handler = jasmine.createSpy();
+                    control.on( 'name', handler );
+                    control.off( 'name' );
+                    control.emit( 'name' );
+                    expect( handler ).not.toHaveBeenCalled();
+                });
+            });
+
         });
 
-        describe( 'DOMEvent API', function () {
+        describe( 'dom event by `helper`', function () {
             var c = new Control();
             var count = 0;
             var handler = function ( ev ) {
                 count++;
             };
 
-            it( '`addDOMEvent`', function () {
-                c.addDOMEvent( c.main, 'click', handler );
+            it( '`helper.addDOMEvent`', function () {
+                helper.addDOMEvent( c, c.main, 'click', handler );
                 c.main.click(); // +1
                 expect( count ).toEqual( 1 );
             });
 
-            it( '`removeDOMEvent`', function () {
+            it( '`helper.removeDOMEvent`', function () {
                 c.main.click(); // +1
                 c.main.click(); // +1
-                c.removeDOMEvent( c.main, 'click', handler );
+                helper.removeDOMEvent( c, c.main, 'click', handler );
                 c.main.click(); // nothing
                 c.main.click(); // nothing
                 expect( count ).toEqual( 3 );
             });
 
-            it( '`clearDOMEvents`', function () {
+            it( '`helper.clearDOMEvents`', function () {
                 count = 0;
-                c.addDOMEvent( c.main, 'click', handler );
-                c.addDOMEvent( c.main, 'click', handler );
-                c.addDOMEvent( c.main, 'click', handler );
+                helper.addDOMEvent( c, c.main, 'click', handler );
+                helper.addDOMEvent( c, c.main, 'click', handler );
+                helper.addDOMEvent( c, c.main, 'click', handler );
                 c.main.click(); // `capture` is false
-                c.clearDOMEvents( c.main );
+                helper.clearDOMEvents( c, c.main );
                 c.main.click();
                 expect( count ).toEqual( 1 );
             });

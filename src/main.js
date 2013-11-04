@@ -141,6 +141,7 @@ define(function ( require ) {
                 this.id = helper.getGUID();
             }
 
+            this.childrenIndex = {};
             this.children = [];
             this.states = {};
 
@@ -586,18 +587,10 @@ define(function ( require ) {
          *
          * @public
          * @param {string} childName 子控件名
-         * @return {module:Control} 获取到的子控件 
+         * @return {?module:Control} 获取到的子控件 
          */
         getChild: function( childName ) {
-            var children = this.children;
-
-            childName = childName || control.childName;
-
-            if ( childName ) {
-                children[nane] = control;
-            }
-
-            children.push(control);
+            return this.childrenIndex[ childName ] || null;
         },
 
         /**
@@ -607,7 +600,18 @@ define(function ( require ) {
          * @param {HTMLElement} wrap 容器DOM元素
          */
         initChildren: function ( wrap ) {
+            // 未指定父容器元素时，这里暂时采用共享主控元素
+            // TODO 像`Button`控件得考虑适当调整(主控元素为<button>自身)
+            wrap = wrap || this.main;
+
+            // 生成初始化配置
             // TODO
+            //     这里暂时从父控件的`options`获取
+            //     视情况定是否采用`esui`的`renderOptions`方式
+            var options = lang.extend( {}, this.options );
+            options.parent = this;
+
+            ui.init( wrap, options );
         },
 
         /**
@@ -618,7 +622,23 @@ define(function ( require ) {
          * @param {string=} childName 子控件名
          */
         addChild: function ( control, childName ) {
-            // TODO
+            childName = childName || control.childName;
+
+            // 若控件已存在父控件，先断开关系
+            if ( control.parent ) {
+                control.parent.removeChild( control );
+            }
+
+            // 加入子控件列表，并存储父控件引用
+            this.children.push( control );
+            control.parent = this;
+
+            // 如果指定了控件名
+            // 则给子控件存储此命名，且加入父控件的具名子控件索引
+            if ( childName ) {
+                control.childName = childName;
+                this.childrenIndex[ childName ] = control;
+            }
         },
 
         /**
@@ -628,7 +648,28 @@ define(function ( require ) {
          * @param {module:Control} control 子控件实例
          */
         removeChild: function ( control ) {
-            // TODO
+            // 从子控件树列表中移除
+            var children = this.children;
+            var size = children.length;
+            while ( size-- ) {
+                if ( children[ size ] === control ) {
+                    children.splice( size, 1);
+                    // 上面移除了一项，这里修正下下个索引
+                    // 正常情况下，子控件不可能重复添加
+                    // 这里的优化其实不一定有太大作用
+                    // 看情况是否保留 或者 直接 `break`
+                    size--;
+                }
+            }
+
+            // 从具名子控件索引中移除
+            var childName = control.childName;
+            if ( childName ) {
+                this.childrenIndex[ childName ] = null;
+            }
+
+            // 断开与父控件的关系
+            control.parent = null;
         },
 
 
@@ -697,44 +738,6 @@ define(function ( require ) {
          */
         hasState: function( state ) {
             return !!this.states[ state ];
-        },
-
-
-
-        /**
-         * 为控件管理的DOM元素添加DOM事件
-         * 
-         * @public
-         * @param {HTMLElement} element 需要添加事件的DOM元素
-         * @param {string} type 事件的类型
-         * @param {function} handler 事件处理函数
-         */
-        addDOMEvent: function ( element, type, handler ) {
-            helper.addDOMEvent( this, element, type, handler );
-        },
-
-        /**
-         * 为控件管理的DOM元素添加DOM事件
-         * 
-         * @public
-         * @param {HTMLElement} element 需要添加事件的DOM元素
-         * @param {string} type 事件的类型
-         * @param {function} handler 事件处理函数
-         */
-        removeDOMEvent: function ( element, type, handler ) {
-            helper.removeDOMEvent( this, element, type, handler );
-        },
-
-        /**
-         * 清除控件管理的DOM元素上的事件
-         * 
-         * @public
-         * @param {Control} control 控件实例
-         * @param {HTMLElement=} element 控件管理的DOM元素，
-         * 如果没有此参数则去除所有该控件管理的元素的DOM事件
-         */
-        clearDOMEvents: function ( element ) {
-            helper.clearDOMEvents( this, element );
         }
 
     };
