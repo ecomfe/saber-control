@@ -8,8 +8,8 @@
 
 define(function ( require ) {
 
-    var ui = require( 'saber-ui' );
     var dom = require( 'saber-dom' );
+    var ui = require( 'saber-ui' );
 
     /**
      * 控件基类helper方法模块

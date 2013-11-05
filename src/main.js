@@ -8,11 +8,11 @@
 
 define(function ( require ) {
 
-    var ui = require( 'saber-ui' );
     var lang = require( 'saber-lang' );
     var dom = require( 'saber-dom' );
     var emitter = require( 'saber-emitter' );
     var helper = require( './helper' );
+    var ui = require( 'saber-ui' );
 
     /**
      * 控件基类

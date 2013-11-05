@@ -13,29 +13,34 @@
         <script>
         require.config({
             packages: [
-                {
-                    name: 'saber-ui',
-                    location: '../dep/saber-ui/src',
-                    main: 'ui'
-                },
+
                 {
                     name: 'saber-lang',
                     location: '../dep/saber-lang/src',
                     main: 'main'
                 },
+
                 {
                     name: 'saber-emitter',
                     location: '../dep/saber-emitter/src',
                     main: 'emitter'
                 },
+
                 {
                     name: 'saber-dom',
                     location: '../dep/saber-dom/src',
                     main: 'main'
                 },
+
                 {
                     name: 'saber-control',
                     location: '../src',
+                    main: 'main'
+                },
+
+                {
+                    name: 'saber-ui',
+                    location: '../dep/saber-ui/src',
                     main: 'main'
                 }
             ]
