@@ -11,8 +11,9 @@ define(function ( require ) {
     var lang = require( 'saber-lang' );
     var dom = require( 'saber-dom' );
     var emitter = require( 'saber-emitter' );
-    var helper = require( './helper' );
     var ui = require( 'saber-ui' );
+    var helper = require( './helper' );
+
 
     /**
      * 控件基类
@@ -20,23 +21,25 @@ define(function ( require ) {
      * 
      * @constructor
      * @exports Control
-     * @requires ui
-     * @requires lang
-     * @requires dom
-     * @requires emitter
-     * @requires module:Control~helper
-     * @fires module:Control#beforeinit
-     * @fires module:Control#init
-     * @fires module:Control#afterinit
-     * @fires module:Control#beforerender
-     * @fires module:Control#afterrender
-     * @fires module:Control#beforedispose
-     * @fires module:Control#afterdispose
-     * @fires module:Control#show
-     * @fires module:Control#hide
-     * @fires module:Control#enable
-     * @fires module:Control#disable
-     * @fires module:Control#propertychange
+     * @class
+     * @mixes Emitter
+     * @requires saber-lang
+     * @requires saber-dom
+     * @requires saber-emitter
+     * @requires saber-ui
+     * @requires saber-control/helper
+     * @fires Control#beforeinit
+     * @fires Control#init
+     * @fires Control#afterinit
+     * @fires Control#beforerender
+     * @fires Control#afterrender
+     * @fires Control#beforedispose
+     * @fires Control#afterdispose
+     * @fires Control#show
+     * @fires Control#hide
+     * @fires Control#enable
+     * @fires Control#disable
+     * @fires Control#propertychange
      * @param {Object} options 初始化配置参数
      * @param {string=} options.id 控件标识
      * @param {HTMLElement=} options.main 控件主元素
@@ -47,7 +50,7 @@ define(function ( require ) {
         this.initialize.apply( this, arguments );
     };
 
-    Control.prototype = {
+    Control.prototype = /** @lends Control.prototype */{
 
         // 修复构造器引用
         constructor: Control,
@@ -117,9 +120,9 @@ define(function ( require ) {
          * @param {HTMLElement=} options.main 控件主元素
          * @param {string=} options.skin 控件皮肤
          * @param {*=} options.* 其余初始化参数由各控件自身决定
-         * @fires module:Control#beforeinit
-         * @fires module:Control#init
-         * @fires module:Control#afterinit
+         * @fires Control#beforeinit
+         * @fires Control#init
+         * @fires Control#afterinit
          */
         initialize: function ( options ) {
 
@@ -130,7 +133,7 @@ define(function ( require ) {
             this.initOptions( options );
 
             /**
-             * @event module:Control#beforeinit
+             * @event Control#beforeinit
              * @param {Object} ev 事件参数对象
              * @param {string} ev.type 事件类型
              * @param {Control} ev.target 触发事件的控件对象
@@ -155,7 +158,7 @@ define(function ( require ) {
             }
 
             /**
-             * @event module:Control#init
+             * @event Control#init
              * @param {Object} ev 事件参数对象
              * @param {string} ev.type 事件类型
              * @param {Control} ev.target 触发事件的控件对象
@@ -163,7 +166,7 @@ define(function ( require ) {
             this.emit( 'init' );
 
             /**
-             * @event module:Control#afterinit
+             * @event Control#afterinit
              * @param {Object} ev 事件参数对象
              * @param {string} ev.type 事件类型
              * @param {Control} ev.target 触发事件的控件对象
@@ -196,8 +199,8 @@ define(function ( require ) {
          * 渲染控件
          * 
          * @protected
-         * @fires module:Control#beforerender
-         * @fires module:Control#afterrender
+         * @fires Control#beforerender
+         * @fires Control#afterrender
          */
         render: function () {
             var rendered = this.rendered;
@@ -206,7 +209,7 @@ define(function ( require ) {
                 this.rendered = true;
 
                 /**
-                 * @event module:Control#beforerender
+                 * @event Control#beforerender
                  * @param {Object} ev 事件参数对象
                  * @param {string} ev.type 事件类型
                  * @param {Control} ev.target 触发事件的控件对象
@@ -240,7 +243,7 @@ define(function ( require ) {
 
             if ( !rendered ) {
                 /**
-                 * @event module:Control#afterrender
+                 * @event Control#afterrender
                  * @param {Object} ev 事件参数对象
                  * @param {string} ev.type 事件类型
                  * @param {Control} ev.target 触发事件的控件对象
@@ -274,8 +277,8 @@ define(function ( require ) {
          * 销毁控件
          * 
          * @public
-         * @fires module:Control#beforedispose
-         * @fires module:Control#afterdispose
+         * @fires Control#beforedispose
+         * @fires Control#afterdispose
          */
         dispose: function () {
             if ( this.disposed ) {
@@ -283,7 +286,7 @@ define(function ( require ) {
             }
 
             /**
-             * @event module:Control#beforedispose
+             * @event Control#beforedispose
              * @param {Object} ev 事件参数对象
              * @param {string} ev.type 事件类型
              * @param {Control} ev.target 触发事件的控件对象
@@ -293,7 +296,7 @@ define(function ( require ) {
             helper.dispose( this );
 
             /**
-             * @event module:Control#afterdispose
+             * @event Control#afterdispose
              * @param {Object} ev 事件参数对象
              * @param {string} ev.type 事件类型
              * @param {Control} ev.target 触发事件的控件对象
@@ -334,7 +337,7 @@ define(function ( require ) {
          * 设置控件状态为启用
          * 
          * @public
-         * @fires module:Control#enable
+         * @fires Control#enable
          */
         enable: function () {
             // this.disabled = false;
@@ -346,7 +349,7 @@ define(function ( require ) {
             this.removeState( 'disabled' );
 
             /**
-             * @event module:Control#enable
+             * @event Control#enable
              * @param {Object} ev 事件参数对象
              * @param {string} ev.type 事件类型
              * @param {Control} ev.target 触发事件的控件对象
@@ -358,7 +361,7 @@ define(function ( require ) {
          * 设置控件状态为禁用
          * 
          * @public
-         * @fires module:Control#disable
+         * @fires Control#disable
          */
         disable: function () {
             // this.disabled = true;
@@ -370,7 +373,7 @@ define(function ( require ) {
             this.addState( 'disabled' );
 
             /**
-             * @event module:Control#disable
+             * @event Control#disable
              * @param {Object} ev 事件参数对象
              * @param {string} ev.type 事件类型
              * @param {Control} ev.target 触发事件的控件对象
@@ -402,7 +405,7 @@ define(function ( require ) {
          * 设置控件状态为可见
          * 
          * @public
-         * @fires module:Control#show
+         * @fires Control#show
          */
         show: function() {
             if ( !this.isHidden() ) {
@@ -412,7 +415,7 @@ define(function ( require ) {
             this.removeState( 'hidden' );
 
             /**
-             * @event module:Control#show
+             * @event Control#show
              * @param {Object} ev 事件参数对象
              * @param {string} ev.type 事件类型
              * @param {Control} ev.target 触发事件的控件对象
@@ -424,7 +427,7 @@ define(function ( require ) {
          * 设置控件状态为不可见
          * 
          * @public
-         * @fires module:Control#hide
+         * @fires Control#hide
          */
         hide: function() {
             if ( this.isHidden() ) {
@@ -434,7 +437,7 @@ define(function ( require ) {
             this.addState( 'hidden' );
 
             /**
-             * @event module:Control#hide
+             * @event Control#hide
              * @param {Object} ev 事件参数对象
              * @param {string} ev.type 事件类型
              * @param {Control} ev.target 触发事件的控件对象
@@ -516,7 +519,7 @@ define(function ( require ) {
          * 
          * @public
          * @param {Object} properties 属性值集合
-         * @fires module:Control#propertychange
+         * @fires Control#propertychange
          */
         setProperties: function ( properties ) {
             // 确保只有在渲染以前（`initOptions`调用时）才允许设置id
@@ -569,7 +572,7 @@ define(function ( require ) {
                 }
 
                 /**
-                 * @event module:Control#propertychange
+                 * @event Control#propertychange
                  * @param {Object} ev 事件参数对象
                  * @param {string} ev.type 事件类型
                  * @param {Control} ev.target 触发事件的控件对象
@@ -587,7 +590,7 @@ define(function ( require ) {
          *
          * @public
          * @param {string} childName 子控件名
-         * @return {?module:Control} 获取到的子控件 
+         * @return {?Control} 获取到的子控件 
          */
         getChild: function( childName ) {
             return this.childrenIndex[ childName ] || null;
@@ -618,7 +621,7 @@ define(function ( require ) {
          * 添加子控件
          * 
          * @public
-         * @param {module:Control} control 控件实例
+         * @param {Control} control 控件实例
          * @param {string=} childName 子控件名
          */
         addChild: function ( control, childName ) {
@@ -645,7 +648,7 @@ define(function ( require ) {
          * 移除子控件
          * 
          * @public
-         * @param {module:Control} control 子控件实例
+         * @param {Control} control 子控件实例
          */
         removeChild: function ( control ) {
             // 从子控件树列表中移除
@@ -742,6 +745,7 @@ define(function ( require ) {
 
     };
 
+
     // 混入 emitter 支持
     emitter.mixin( Control.prototype );
 
@@ -751,6 +755,7 @@ define(function ( require ) {
      * Control原型的emit方法引用
      * 其是`Emitter`的`emit`方法`mixin`复制而来
      * 
+     * @inner
      * @type {Function}
      */
     var orignEmit = Control.prototype.emit;

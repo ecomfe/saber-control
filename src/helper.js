@@ -14,11 +14,12 @@ define(function ( require ) {
     /**
      * 控件基类helper方法模块
      * 
-     * @exports module:Control~helper
-     * @requires ui
-     * @requires dom
+     * @module saber-control/helper
+     * @requires saber-ui
+     * @requires saber-dom
+     * @type {Object}
      */
-    var helper = {};
+    var exports = {};
 
 
     /**
@@ -36,7 +37,7 @@ define(function ( require ) {
      * @param {string=} prefix 前缀
      * @return {string} 新唯一id字符串
      */
-    helper.getGUID = function ( prefix ) {
+    exports.getGUID = function ( prefix ) {
         prefix = prefix || 'ui';
         return prefix + counter++;
     };
@@ -49,7 +50,7 @@ define(function ( require ) {
      * @param {string=} part 控件内部件名称
      * @return {string} 
      */
-    helper.getId = function ( control, part ) {
+    exports.getId = function ( control, part ) {
         var prefix = control.domIDPrefix
             ? control.domIDPrefix + '-'
             : '';
@@ -66,7 +67,7 @@ define(function ( require ) {
      * @public
      * @param {Control} control 控件实例
      */
-    helper.dispose = function ( control ) {
+    exports.dispose = function ( control ) {
         var child;
         while ( ( child = control.children.pop() ) ) {
             child.dispose();
@@ -76,7 +77,7 @@ define(function ( require ) {
         control.children = null;
 
         // 清理DOM事件绑定
-        helper.clearDOMEvents( control );
+        exports.clearDOMEvents( control );
 
         // 若存在父控件，则从父控件树中移除
         if ( control.parent ) {
@@ -153,7 +154,7 @@ define(function ( require ) {
      * @param {string=} part 控件内部件名称
      * @return {Array.<string>}
      */
-    helper.getPartClasses = function ( control, part ) {
+    exports.getPartClasses = function ( control, part ) {
         // main:
         //   ui-{commonCls} 为了定义有限全局的normalize
         //   ui-{type}
@@ -200,12 +201,12 @@ define(function ( require ) {
      * @param {string=} part 控件内部件名称
      * @param {HTMLElement=} element 控件内部件元素
      */
-    helper.addPartClasses = function ( control, part, element ) {
+    exports.addPartClasses = function ( control, part, element ) {
         element = element || control.main;
         if ( element ) {
             addClasses(
                 element,
-                helper.getPartClasses( control, part )
+                exports.getPartClasses( control, part )
             );
         }
     };
@@ -218,12 +219,12 @@ define(function ( require ) {
      * @param {string=} part 控件内部件名称
      * @param {HTMLElement=} element 控件内部件元素
      */
-    helper.removePartClasses = function ( control, part, element ) {
+    exports.removePartClasses = function ( control, part, element ) {
         element = element || control.main;
         if ( element ) {
             removeClasses(
                 element,
-                helper.getPartClasses( control, part, element )
+                exports.getPartClasses( control, part, element )
             );
         }
     };
@@ -236,7 +237,7 @@ define(function ( require ) {
      * @param {string} state 状态名称
      * @return {Array.<string>}
      */
-    helper.getStateClasses = function ( control, state ) {
+    exports.getStateClasses = function ( control, state ) {
         // ui-{type}-{statename}
         // state-{statename}
         // skin-{skinname}-{statename}
@@ -267,9 +268,9 @@ define(function ( require ) {
      * @param {Control} control 控件实例
      * @param {string} state 状态名称
      */
-    helper.addStateClasses = function ( control, state ) {
+    exports.addStateClasses = function ( control, state ) {
         if ( control.main ) {
-            addClasses( control.main, helper.getStateClasses( control, state ) );
+            addClasses( control.main, exports.getStateClasses( control, state ) );
         }
     };
 
@@ -280,9 +281,9 @@ define(function ( require ) {
      * @param {Control} control 控件实例
      * @param {string} state 状态名称
      */
-    helper.removeStateClasses = function ( control, state ) {
+    exports.removeStateClasses = function ( control, state ) {
         if ( control.main ) {
-            removeClasses( control.main, helper.getStateClasses( control, state ) );
+            removeClasses( control.main, exports.getStateClasses( control, state ) );
         }
     };
 
@@ -319,14 +320,14 @@ define(function ( require ) {
      * @param {string} type 事件的类型
      * @param {function} handler 事件处理函数
      */
-    helper.addDOMEvent = function ( control, element, type, handler ) {
+    exports.addDOMEvent = function ( control, element, type, handler ) {
         if ( !control.domEvents ) {
             control.domEvents = {};
         }
 
         var guid = element[ domEventsKey ];
         if ( !guid ) {
-            guid = element[ domEventsKey ] = helper.getGUID();
+            guid = element[ domEventsKey ] = exports.getGUID();
         }
 
         var events = control.domEvents[ guid ];
@@ -357,7 +358,7 @@ define(function ( require ) {
      * @param {Function=} handler 事件处理函数
      * 如果没有此参数则移除该控件管理的元素的所有`type`DOM事件
      */
-    helper.removeDOMEvent = function ( control, element, type, handler ) {
+    exports.removeDOMEvent = function ( control, element, type, handler ) {
         if ( !control.domEvents ) {
             return;
         }
@@ -388,7 +389,7 @@ define(function ( require ) {
      * @param {HTMLElement=} element 控件管理的DOM元素，
      * 如果没有此参数则去除所有该控件管理的元素的DOM事件
      */
-    helper.clearDOMEvents = function ( control, element ) {
+    exports.clearDOMEvents = function ( control, element ) {
         if ( !control.domEvents ) {
             return;
         }
@@ -399,7 +400,7 @@ define(function ( require ) {
             for ( guid in control.domEvents ) {
                 if ( control.domEvents.hasOwnProperty( guid ) ) {
                     events = control.domEvents[ guid ];
-                    helper.clearDOMEvents( control, events.element );
+                    exports.clearDOMEvents( control, events.element );
                 }
             }
             return;
@@ -414,13 +415,13 @@ define(function ( require ) {
         delete events.element;
         for ( var type in events ) {
             if ( events.hasOwnProperty( type ) ) {
-                helper.removeDOMEvent( control, element, type );
+                exports.removeDOMEvent( control, element, type );
             }
         }
         delete control.domEvents[ guid ];
     };
 
 
-    return helper;
+    return exports;
 
 });
