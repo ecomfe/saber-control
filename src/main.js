@@ -50,7 +50,7 @@ define(function ( require ) {
         this.initialize.apply( this, arguments );
     };
 
-    Control.prototype = /** @lends Control.prototype */{
+    Control.prototype = {
 
         // 修复构造器引用
         constructor: Control,
@@ -180,10 +180,9 @@ define(function ( require ) {
          * 创建控件主元素
          * 
          * @protected
-         * @param {Object} options 构造函数传入的配置参数
          * @return {HTMLElement}
          */
-        createMain: function ( options ) {
+        createMain: function () {
             return document.createElement('div');
         },
 
