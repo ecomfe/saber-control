@@ -128,6 +128,10 @@ define(function ( require ) {
 
             if ( this.initialized ) return;
 
+            this.childrenIndex = {};
+            this.children = [];
+            this.states = {};
+
             options = options || {};
 
             this.initOptions( options );
@@ -143,10 +147,6 @@ define(function ( require ) {
             if ( !this.id && !options.id ) {
                 this.id = helper.getGUID();
             }
-
-            this.childrenIndex = {};
-            this.children = [];
-            this.states = {};
 
             this.main = options.main ? options.main : this.createMain();
 
@@ -215,8 +215,30 @@ define(function ( require ) {
                  */
                 this.emit( 'beforerender' );
 
+                // 在控件渲染前的`initOptions`环节
+                // 可能更改过状态属性`disabled`和`hidden`
+                // 而那时的更改，仅仅是属性值的直接更改（提前更改），
+                // 并不触发`addState`或`removeState`相关UI处理逻辑，
+                // 所以，在第一次`render`的时候需要同步一下各状态表现，
+                // 从而避免初始化设置失效的小坑~~
+                // (其实这里不会引起`propertychange`，因属性值本身并未变化)
+                // TODO: 若没更改过，这里可能是浪费的执行，待优化
+                this.setHidden( this.hidden );
+                this.setDisabled( this.disabled );
+
                 this.initStructure();
 
+                // 确保控件主元素插入到DOM树中
+                // 这里根据`this.options.main`分2种情况:
+                // 1. 非空
+                //    a. `initialize`时传入了`main`
+                //    b. `appendTo`或`insertBefore`调用过 
+                // 2. 为空
+                //    则主元素是由`createMain`方法自动构建生成
+                // 
+                // 若 情况2 则再检查主元素是否的确不在DOM树中, 不是则插入
+                // 
+                // TODO: 这里直接通过`body.contains`验证, 想到更好的替换之
                 if ( !this.options.main
                     && !document.body.contains( this.main ) ) {
                     document.body.appendChild( this.main );
