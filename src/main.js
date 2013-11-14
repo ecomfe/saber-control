@@ -361,8 +361,6 @@ define(function ( require ) {
          * @fires Control#enable
          */
         enable: function () {
-            // this.disabled = false;
-            
             if ( !this.isDisabled() ) {
                 return;
             }
@@ -385,8 +383,6 @@ define(function ( require ) {
          * @fires Control#disable
          */
         disable: function () {
-            // this.disabled = true;
-
             if ( this.isDisabled() ) {
                 return;
             }
