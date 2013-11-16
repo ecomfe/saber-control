@@ -51,6 +51,7 @@ define(function ( require ) {
      * @return {string} 
      */
     exports.getId = function ( control, part ) {
+        // TODO: 目前没用，暂且保持与`esui`一致，看情况是否删除
         var prefix = control.domIDPrefix
             ? control.domIDPrefix + '-'
             : '';
