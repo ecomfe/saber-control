@@ -40,13 +40,13 @@ define(function ( require ) {
      * @fires Control#enable
      * @fires Control#disable
      * @fires Control#propertychange
-     * @param {Object} options 初始化配置参数
+     * @param {Object=} options 初始化配置参数
      * @param {string=} options.id 控件标识
      * @param {HTMLElement=} options.main 控件主元素
      * @param {string=} options.skin 控件皮肤
      * @param {*=} options.* 其余初始化参数由各控件自身决定
      */
-    var Control = function ( options ) {
+    var Control = function () {
         this.initialize.apply( this, arguments );
     };
 
@@ -88,8 +88,6 @@ define(function ( require ) {
          * @param {*=} options.* 其余初始化参数由各控件自身决定
          */
         initOptions: function ( options ) {
-            options = options || {};
-
             var key, val;
             for ( key in options ) {
                 if ( !options.hasOwnProperty( key ) ) {
@@ -115,7 +113,7 @@ define(function ( require ) {
          * 控件初始化
          * 
          * @protected
-         * @param {Object} options 构造函数传入的配置参数
+         * @param {Object=} options 构造函数传入的配置参数
          * @param {string=} options.id 控件标识
          * @param {HTMLElement=} options.main 控件主元素
          * @param {string=} options.skin 控件皮肤
@@ -313,6 +311,9 @@ define(function ( require ) {
              * @param {Control} ev.target 触发事件的控件对象
              */
             this.emit( 'afterdispose' );
+
+            // 清理绑定的插件
+            ui.disposePlugin( this );
 
             // 清理自定义事件和监听器
             this.off();
