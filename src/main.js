@@ -28,6 +28,7 @@ define(function ( require ) {
      * @requires saber-emitter
      * @requires saber-ui
      * @requires saber-control/helper
+     * @fires Control#
      * @fires Control#beforeinit
      * @fires Control#init
      * @fires Control#afterinit
@@ -774,7 +775,7 @@ define(function ( require ) {
      *    { `type`: 事件类型, `target`: 触发事件的控件对象 }
      * 
      * @override
-     * @param {string} event 事件名
+     * @param {string} type 事件名
      * @param {...*} * 传递给监听器的参数，可以有多个
      * @example
      * // 很多类型事件监听的场景下，可共享同一个 handler 简化代码

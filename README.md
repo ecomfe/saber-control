@@ -1,30 +1,28 @@
-saber-control
-===
+# saber-control
 
-一个适用于移动端的UI组件库基类。 `ECOM UI v1.1`规范实现。
-
-
-### Dependencies
+[`SaberUI`](https://github.com/ecomfe/saber-ui)的控件基类。`ECOM UI v1.1`规范实现。
 
 
-+ [saber-ui](https://github.com/ecomfe/saber-ui)
+## Dependencies
+
 + [saber-lang](https://github.com/ecomfe/saber-lang)
 + [saber-emitter](https://github.com/ecomfe/saber-emitter)
 + [saber-dom](https://github.com/ecomfe/saber-dom)
++ [saber-ui](https://github.com/ecomfe/saber-ui)
 
-### Usage
+## Usage
 
+通过[`edp`](https://github.com/ecomfe/edp)导入
 
-**现在 `saber-control` 模块还在开发中，无法通过 `edp` 安装。**
-
-通过`ln`软连接依赖模块：
-
-	$ ln -s ../saber-ui ./dep/
-	$ ln -s ../saber-lang ./dep/
-	$ ln -s ../saber-emitter ./dep/
-	$ ln -s ../saber-dom ./dep/
+	edp import saber-control
 
 
-### API
+## API
 
-	TODO
++ [Control](https://github.com/ecomfe/saber-control/doc/api-control.md)
++ [helper](https://github.com/ecomfe/saber-control/doc/api-helper.md)
+
+
+===
+
+[![Saber](https://f.cloud.github.com/assets/157338/1485433/aeb5c72a-4714-11e3-87ae-7ef8ae66e605.png)](http://ecomfe.github.io/saber/)

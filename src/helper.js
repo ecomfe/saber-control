@@ -2,7 +2,7 @@
  * Saber UI
  * Copyright 2013 Baidu Inc. All rights reserved.
  * 
- * @file 控件基类helper方法模块
+ * @file 控件基类常用方法辅助集
  * @author zfkun(zfkun@msn.com)
  */
 
@@ -387,7 +387,7 @@ define(function ( require ) {
      * 
      * @public
      * @param {Control} control 控件实例
-     * @param {HTMLElement=} element 控件管理的DOM元素，
+     * @param {HTMLElement=} element 控件管理的DOM元素
      * 如果没有此参数则去除所有该控件管理的元素的DOM事件
      */
     exports.clearDOMEvents = function ( control, element ) {
