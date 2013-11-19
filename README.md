@@ -19,8 +19,8 @@
 
 ## API
 
-+ [Control](https://github.com/ecomfe/saber-control/doc/api-control.md)
-+ [helper](https://github.com/ecomfe/saber-control/doc/api-helper.md)
++ [Control](https://github.com/ecomfe/saber-control/blob/master/doc/api-control.md)
++ [helper](https://github.com/ecomfe/saber-control/blob/master/doc/api-helper.md)
 
 
 ===
