@@ -21,6 +21,9 @@
 
 	<!--正确-->
 	<div data-ui="type:Tab;scroll:true;" data-ui-plugin-scroll="horizontal:false;">...</div>
+	
+	<!--正确-->
+	<div data-ui-type="Tab" data-ui-scroll="true" data-ui-plugin-scroll-horizontal="false">...</div>
 	```
 
 + `...`: 更多初始化参数由各控件自身决定，参数`可选`

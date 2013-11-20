@@ -108,12 +108,13 @@ define(function ( require ) {
                 }
             }
 
+            // 感觉插件机制越搞越像扩展机制了~~~~~
             // 目前，插件初始化配置信息存储在`plugin`对象里
             // 而插件配置信息，不需要作为控件的属性存在
             // 仅保留在初始化配置对象`this.options`内即可，
             // 各插件根据需要，自行获取，则：
             // 1. 这里先从初始化`options`对象里取出
-            var plugins = options.plugin;
+            var pluginOptions = options.plugin;
             delete options.plugin;
 
             // 2. 待属性设置器`setProperties`操作完成后
@@ -122,8 +123,8 @@ define(function ( require ) {
             this.setProperties( this.options );
 
             // 3. 再追加回来插件配置集对象`plugin`
-            if ( plugins ) {
-                this.options.plugin = plugin;
+            if ( pluginOptions ) {
+                this.options.plugin = pluginOptions;
             }
         },
 
