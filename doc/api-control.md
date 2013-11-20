@@ -25,11 +25,11 @@
 
 ## Method
 
-### .initialize(options)
+### .initialize([options])
 
 控件初始化
 
-`options`: 构造函数传入的选项，类型`Object`，包含项参考[`Option`](#option)
+`options`: 构造函数传入的选项，类型`Object`，参数`可选`，包含项参考[`Option`](#option)
 
 ***注：此方法尽量不要重写，必要的初始化逻辑可以使用[`init`](#init)***
 
