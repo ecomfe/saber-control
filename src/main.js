@@ -89,6 +89,7 @@ define(function ( require ) {
          * @param {*=} options.* 其余初始化参数由各控件自身决定
          */
         initOptions: function ( options ) {
+            // 处理`onxxx`形式的监听方法参数
             var key, val;
             for ( key in options ) {
                 if ( !options.hasOwnProperty( key ) ) {
@@ -107,7 +108,23 @@ define(function ( require ) {
                 }
             }
 
-            this.setProperties( this.options = options );
+            // 目前，插件初始化配置信息存储在`plugin`对象里
+            // 而插件配置信息，不需要作为控件的属性存在
+            // 仅保留在初始化配置对象`this.options`内即可，
+            // 各插件根据需要，自行获取，则：
+            // 1. 这里先从初始化`options`对象里取出
+            var plugins = options.plugin;
+            delete options.plugin;
+
+            // 2. 待属性设置器`setProperties`操作完成后
+            // 这里做了下对象克隆，以防各种不可预知的覆盖错误
+            this.options = lang.extend( {}, options );
+            this.setProperties( this.options );
+
+            // 3. 再追加回来插件配置集对象`plugin`
+            if ( plugins ) {
+                this.options.plugin = plugin;
+            }
         },
 
         /**
@@ -548,9 +565,15 @@ define(function ( require ) {
 
             // 确保几个状态选项值为`boolean`类型
             // `diabled`, `hidden`
-            [ 'disabled', 'hidden' ].forEach( function ( booleanKey ) {
-                if ( properties.hasOwnProperty( booleanKey ) ) {
-                    properties[ booleanKey ] = !!properties[ booleanKey ];
+            [ 'disabled', 'hidden' ].forEach( function ( k ) {
+                if ( properties.hasOwnProperty( k ) ) {
+                    // 静态化构建时，所有属性值从DOM属性而来，均是字符串
+                    // 用正则，而没用`!!`，是因为：
+                    // 子控件万一需要设置属性默认值为`true`时
+                    // 如果静态话配置是`'false'`时，`!!'false'`就失效了为`true`
+                    // TODO：找到更好的方式后再替换
+                    // properties[ k ] = !!properties[ k ];
+                    properties[ k ] = /\s?true\s?/i.test( properties[ k ] );
                 }
             });
 

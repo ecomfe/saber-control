@@ -7,6 +7,22 @@
 + `id`: 控件标识，类型`String`，参数`可选`
 + `main`: 控件主元素，类型`HTMLElement`，参数`可选`
 + `skin`: 控件皮肤，类型`String`，参数`可选`
++ `plugin`: 控件插件配置，类型`Object`，参数`可选`
+	
+	结构形式 `{ p1: {..}, p2: {..} .. }`，具体以控件插件自己实现为准
+	
+	***注：目前，此参数在`静态化构建`时，是从独立的属性节点`data-ui-plugin-xxx`设置获取的，切忌放在`data-ui`节点里***
+	
+	例子
+	
+	```html
+	<!--错误-->
+	<div data-ui="type:Tab;scroll:true;plugin:{scroll:{horizontal:false}};">...</div>
+
+	<!--正确-->
+	<div data-ui="type:Tab;scroll:true;" data-ui-plugin-scroll="horizontal:false;">...</div>
+	```
+
 + `...`: 更多初始化参数由各控件自身决定，参数`可选`
 
 
