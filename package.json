@@ -2,7 +2,7 @@
     "name": "saber-control",
     "version": "0.1.0",
     "description": "SaberUI的控件基类",
-    "main": "control",
+    "main": "main",
     "maintainers": [
         { "name": "zfkun", "email": "zfkun@msn.com" }
     ],
