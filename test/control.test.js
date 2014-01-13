@@ -259,19 +259,19 @@ define(function( require ) {
 
                 it( 'should pass a `type` property in event args[0]', function () {
                     expect(
-                        handler.mostRecentCall.args[ 0 ].type
+                        handler.calls.mostRecent().args[ 0 ].type
                     ).toBe( 'name' );
                 });
 
                 it( 'should pass a `target` property in event args[0]', function () {
                     expect(
-                        handler.mostRecentCall.args[ 0 ].target
+                        handler.calls.mostRecent().args[ 0 ].target
                     ).toBe( control );
                 });
 
                 it( 'should pass extra properties in event args[1]', function () {
                     expect(
-                        handler.mostRecentCall.args[ 1 ].x
+                        handler.calls.mostRecent().args[ 1 ].x
                     ).toBe( 1 );
                 });
 

@@ -328,7 +328,7 @@ define(function( require ) {
 
                     helper.addDOMEvent( control, element, 'click', handler );
                     element.click();
-                    var ev = handler.mostRecentCall.args[ 0 ];
+                    var ev = handler.calls.mostRecent().args[ 0 ];
                     expect( ev ).toBeDefined();
                     expect( ev.type ).toBe( 'click' );
                     expect( ev.target ).toBe( element );
